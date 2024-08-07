@@ -1,30 +1,30 @@
 
 import './App.css';
 import Counter from './components/counter/Counter';
-
+import TodoApp from'./components/todo/TodoApp';
 
 function App() {
   return (
     <div className="App">
-      
-     <Counter/>
+      <TodoApp/>
+     
     
      
     </div>
   );
 }
 
-function PlayWithProps(property1,property2){
+// function PlayWithProps(property1,property2){
   
-  console.log(property1)
-  console.log(property2)
-  return (
-    <div>
-      Props
+//   console.log(property1)
+//   console.log(property2)
+//   return (
+//     <div>
+//       Props
 
-    </div>
-  )
-}
+//     </div>
+//   )
+// }
 // function PlayWithProps(properties){
 //   console.log(properties)
 //   console.log(properties.property1)
