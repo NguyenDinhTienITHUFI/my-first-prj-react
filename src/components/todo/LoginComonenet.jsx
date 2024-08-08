@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter,Routes,Route,useNavigate,useParams,Link } from 'react-router-dom'
+import { useAuth } from './security/AuthContext'
 export default function LoginComponent(){
 
     const[username,setUserName]=useState('tienvua')
@@ -9,6 +10,9 @@ export default function LoginComponent(){
     const[showSuccessMessage,setShowSuccessMessage]=useState(false)
     const[showErrorMessage,setShowErrorMessage]=useState(false)
     const navigate=useNavigate();
+
+    const authContext=useAuth()
+
     function handelUserNameChange(event){
         
         setUserName(event.target.value)
@@ -18,19 +22,19 @@ export default function LoginComponent(){
         setPassword(event.target.value)
     }
     function handeleSubmit(){
-
-        if(username==='tienvua'&&password==='admin'){
-            console.log('success')
-            setShowSuccessMessage(true)
-            setShowErrorMessage(false)
+        if(authContext.login(username,password)){
+           
             navigate(`/welcome/${username}`)
         }
         else{
-            console.log('failed')
             setShowErrorMessage(true)
-            setShowSuccessMessage(false)
+           
         }
+       
     }
+
+   
+
     // function SuccessMessageComponent(){
     //     if(showSuccessMessage)
     //     {
@@ -47,7 +51,7 @@ export default function LoginComponent(){
     return(
         <div className="Login">
             <h1>Login</h1>
-            {showSuccessMessage &&<div className='successMessage'>Authenticated Successfully</div>}
+            
             {showErrorMessage && <div className='errorMessage'>Authenticated Failed</div>}
            {/* <SuccessMessageComponent/>
            <ErrorMessageComponent/> */}
