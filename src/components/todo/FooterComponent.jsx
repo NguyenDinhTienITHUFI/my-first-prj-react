@@ -6,7 +6,7 @@ export default function FooterComponent(){
     return(
         <footer className='footer'>
             <div className='container'>
-                Contact for us: +84964801795
+                
             </div>
           
         </footer>
