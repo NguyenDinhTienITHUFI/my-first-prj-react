@@ -1,57 +1,107 @@
 import { createContext, useContext, useState } from "react";
-import { excuteBasicAuthenticateService } from "../api/HelloWorldApiService";
+import { apiClient } from "../api/ApiClient";
+import { excuteBasicAuthenticateService, excuteJwtAuthenticateService } from "../api/AuthenticationApiService";
 
-export const AuthContext=createContext()
+//1: Create a Context
+export const AuthContext = createContext()
 
-export const useAuth=()=>  useContext(AuthContext)
+export const useAuth = () => useContext(AuthContext)
 
-export default function AuthProvider({children}){
-    
-    const [isAuthenticated,setAuthenticated]=useState(false)
-    const [username,setUsername]=useState(null)
-    //setInterval(()=>setNumber(number+1),10000)
-    //const valueToBeShared={number,isAuthenticated,setAuthenticated}
+//2: Share the created context with other components
+export default function AuthProvider({ children }) {
 
-    // function login(username,password){
-    //     if(username==='tienvua'&&password==='admin'){
+    //3: Put some state in the context
+    const [isAuthenticated, setAuthenticated] = useState(false)
+
+    const [username, setUsername] = useState(null)
+
+    const [token, setToken] = useState(null)
+
+    // function login(username, password) {
+    //     if(username==='in28minutes' && password==='dummy'){
     //         setAuthenticated(true)
     //         setUsername(username)
-    //         return true
-            
-    //     }
-    //     else{
+    //         return true            
+    //     } else {
     //         setAuthenticated(false)
     //         setUsername(null)
-    //          return false
+    //         return false
+    //     }        
+    // }
+
+    // async function login(username, password) {
+
+    //     const baToken = 'Basic ' + window.btoa( username + ":" + password )
+
+    //     try {
+
+    //         const response = await excuteBasicAuthenticateService(baToken)
+
+    //         if(response.status==200){
+    //             setAuthenticated(true)
+    //             setUsername(username)
+    //             setToken(baToken)
+
+    //             apiClient.interceptors.request.use(
+    //                 (config) => {
+    //                     console.log('intercepting and adding a token')
+    //                     config.headers.Authorization = baToken
+    //                     return config
+    //                 }
+    //             )
+                
+    //             return true            
+    //         } else {
+    //             logout()
+    //             return false
+    //         }    
+    //     } catch(error) {
+    //         logout()
+    //         return false
     //     }
     // }
-    function login(username,password){
-        const baToken='Basic '+ window.btoa(username + ":" + password)
-            
+    async function login(username, password) {
 
-        excuteBasicAuthenticateService(baToken)
-            .then(response=>console.log(response))
-            .catch(error=>console.log(error))
-        setAuthenticated(false)
-        // if(username==='tienvua'&&password==='admin'){
-        //     setAuthenticated(true)
-        //     setUsername(username)
-        //     return true
-            
-        // }
-        // else{
-        //     setAuthenticated(false)
-        //     setUsername(null)
-        //      return false
-        // }
+        
+
+        try {
+
+            const response = await excuteJwtAuthenticateService(username,password)
+
+            if(response.status==200){
+                const jwtToken='Bearer ' + response.data.token
+                setAuthenticated(true)
+                setUsername(username)
+                setToken(jwtToken)
+
+                apiClient.interceptors.request.use(
+                    (config) => {
+                        console.log('intercepting and adding a token')
+                        config.headers.Authorization = jwtToken
+                        return config
+                    }
+                )
+                
+                return true            
+            } else {
+                logout()
+                return false
+            }    
+        } catch(error) {
+            logout()
+            return false
+        }
     }
-    function logout(){
+
+    function logout() {
         setAuthenticated(false)
+        setToken(null)
+        setUsername(null)
     }
-    return(
-        <AuthContext.Provider value={{isAuthenticated,login,logout,username}}>
+
+    return (
+        <AuthContext.Provider value={ {isAuthenticated, login, logout, username, token}  }>
             {children}
         </AuthContext.Provider>
-
     )
-}
+} 

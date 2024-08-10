@@ -21,12 +21,13 @@ export default function LoginComponent(){
         
         setPassword(event.target.value)
     }
-    function handeleSubmit(){
-        if(authContext.login(username,password)){
+    async function handeleSubmit(){
+        if(await authContext.login(username,password)){
            
             navigate(`/welcome/${username}`)
         }
         else{
+            
             setShowErrorMessage(true)
            
         }
